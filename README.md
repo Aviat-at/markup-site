@@ -35,8 +35,7 @@ This website is used to publish technical articles and notes related to **Linux*
 ---
 
 ## 📁 Project Structure
-
-```
+````
 .
 ├── app/
 │   ├── layout.tsx              # Root layout (theme, container)
@@ -63,7 +62,7 @@ This website is used to publish technical articles and notes related to **Linux*
 │
 ├── package.json
 └── README.md
-```
+````
 
 ---
 
