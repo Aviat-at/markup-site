@@ -1,36 +1,190 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+```md
+# Akash Tharindu – Technical Blog & Knowledge Base
 
-## Getting Started
+A modern, fast, and SEO-friendly personal blog built with **Next.js (App Router)**, **Material UI**, and **Markdown**.  
+This website is used to publish technical articles and notes related to **Linux**, **Docker**, **Python**, and other engineering topics.
 
-First, run the development server:
+🌐 Live at: **https://blog.akashtharindu.com**
+
+---
+
+## ✨ Features
+
+- 📄 Markdown-based content (no database required)
+- ⚡ Built with Next.js App Router (server-side rendering & static generation)
+- 🎨 Material UI (responsive, modern UI)
+- 🗂 Category-based articles (Linux, Docker, Python, etc.)
+- 🖼 Category cards with background images
+- 🔒 HTTPS enabled automatically via Vercel
+- 🌍 Global CDN hosting
+- 🚀 Automatic deployments from GitHub
+- ☁️ DNS managed via Cloudflare
+
+---
+
+## 🧱 Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **UI Library**: Material UI (MUI)
+- **Styling**: MUI system (sx)
+- **Content**: Markdown (`.md`) files
+- **Hosting**: Vercel (Free plan)
+- **DNS**: Cloudflare
+- **Language**: TypeScript
+
+---
+
+## 📁 Project Structure
+
+```
+.
+├── app/
+│   ├── layout.tsx              # Root layout (theme, container)
+│   ├── page.tsx                # Home page (categories)
+│   └── [category]/
+│       ├── page.tsx            # Category page (list of posts)
+│       └── [slug]/
+│           └── page.tsx        # Article page
+│
+├── content/
+│   ├── linux/
+│   │   └── ubuntu-basics.md
+│   ├── docker/
+│   │   └── docker-compose.md
+│   └── python/
+│       └── venv.md
+│
+├── lib/
+│   └── content.ts              # Markdown loader & parser
+│
+├── public/
+│   └── images/
+│       └── categories/         # Category background images
+│
+├── package.json
+└── README.md
+```
+
+---
+
+## 📝 Writing Articles
+
+### 1️⃣ Create a new Markdown file
+
+Example:
+```
+content/docker/docker-volumes.md
+```
+
+### 2️⃣ Add frontmatter + content
+
+```md
+---
+title: "Docker Volumes"
+date: "2025-01-01"
+tags: ["docker", "storage"]
+---
+
+# Docker Volumes
+
+Docker volumes are used to persist data...
+
+```bash
+docker volume create mydata
+```
+```
+
+### 3️⃣ Run locally
+```bash
+npm run dev
+```
+
+Open:
+```
+http://localhost:3000/docker/docker-volumes
+```
+
+---
+
+## 🚀 Deployment
+
+This project is deployed using **Vercel** with GitHub integration.
+
+### Deployment flow
+
+1. Push code to GitHub
+2. Vercel auto-builds and deploys
+3. Changes go live instantly
+
+### Custom domain
+
+- Blog URL: `blog.akashtharindu.com`
+- DNS managed via Cloudflare
+- SSL handled automatically by Vercel
+
+---
+
+## 🌐 DNS & Hosting Architecture
+
+```
+User → Cloudflare DNS → Vercel CDN → Next.js App
+```
+
+- Cloudflare handles DNS & security
+- Vercel handles hosting, SSL, and scaling
+
+---
+
+## 🛠 Development
+
+### Install dependencies
+
+```bash
+npm install
+```
+
+### Run development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Build for production
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 📌 Roadmap (Planned Improvements)
 
-To learn more about Next.js, take a look at the following resources:
+- 🔍 Full-text search
+- 🧭 Sidebar documentation layout
+- 🧩 MDX support (React components inside articles)
+- 🖨 Code highlighting with copy button
+- 🗺 Sitemap & SEO enhancements
+- 📊 Analytics integration
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 👤 Author
 
-## Deploy on Vercel
+**Akash Tharindu Kumarasiri**  
+Software Engineer | Cloud & DevOps Enthusiast
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- 🌐 Website: [https://blog.akashtharindu.com](https://blog.akashtharindu.com)
+- 💼 LinkedIn: [https://www.linkedin.com/in/akash-tharindu](https://www.linkedin.com/in/akash-tharindu)
+- 🧑‍💻 GitHub: [https://github.com/akashtharindu](https://github.com/akashtharindu)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**.  
+You are free to use, modify, and distribute with attribution.
+
+---
+
+⭐ If you find this project useful, consider starring the repository!
+```
