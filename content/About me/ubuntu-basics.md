@@ -1,7 +1,7 @@
 ---
-title: "Ubuntu Basics"
+title: "About me"
 date: "2025-12-25"
-tags: ["ubuntu", "linux"]
+tags: []
 ---
 
 
