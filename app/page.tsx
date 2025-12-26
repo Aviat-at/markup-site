@@ -15,8 +15,7 @@ export default function HomePage() {
       </Typography>
 
       <Typography variant="body1" sx={{ mb: 3 }}>
-        A personal knowledge base for Linux, Docker, and Python.
-        A personal knowledge base for Linux, Docker, and Python.
+      A personal knowledge base for Linux, Docker, and Python.
       </Typography>
 
       <Grid container spacing={1}>
