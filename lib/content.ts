@@ -24,6 +24,7 @@ function estimateReadingTime(content: string): string {
 
 export function getCategories(): string[] {
   if (!fs.existsSync(CONTENT_DIR)) return [];
+
   return fs
     .readdirSync(CONTENT_DIR)
     .filter((name) => !name.startsWith("."))
@@ -35,7 +36,7 @@ export function getPostsByCategory(category: string): PostMeta[] {
   const categoryDir = path.join(CONTENT_DIR, category);
   if (!fs.existsSync(categoryDir)) return [];
 
-  const files = fs.readdirSync(categoryDir).filter((f) => f.endsWith(".md"));
+  const files = fs.readdirSync(categoryDir).filter((file) => file.endsWith(".md"));
 
   return files
     .map((file) => {
