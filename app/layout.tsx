@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     template: "%s | Akash Tharindu Blog",
   },
   description:
-    "A user-friendly technical blog with practical Linux, Docker, and web engineering tutorials.",
+    "Technical blog with practical guides on Linux, Docker, Next.js, and engineering workflows.",
 };
 
 export default function RootLayout({
@@ -33,8 +33,7 @@ export default function RootLayout({
                 borderColor: "divider",
                 position: "sticky",
                 top: 0,
-                bgcolor: "rgba(255,255,255,0.86)",
-                backdropFilter: "blur(10px)",
+                bgcolor: "background.paper",
                 zIndex: 10,
               }}
             >
@@ -46,16 +45,14 @@ export default function RootLayout({
                   alignItems={{ xs: "flex-start", sm: "center" }}
                 >
                   <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
-                    <Typography variant="h6" fontWeight={800}>
+                    <Typography variant="h6" fontWeight={700}>
                       Akash Tharindu Blog
                     </Typography>
                   </Link>
 
                   <Stack direction="row" spacing={1}>
                     <Link href="/" style={{ textDecoration: "none" }}>
-                      <Button size="small" variant="text">
-                        Home
-                      </Button>
+                      <Button size="small">Home</Button>
                     </Link>
                   </Stack>
                 </Stack>

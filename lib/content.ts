@@ -22,19 +22,6 @@ function estimateReadingTime(content: string): string {
   return `${minutes} min read`;
 }
 
-function createExcerpt(content: string, maxLength = 140): string {
-  const plainText = content
-    .replace(/```[\s\S]*?```/g, "")
-    .replace(/[#>*_`\-]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-
-  if (!plainText) return "";
-  if (plainText.length <= maxLength) return plainText;
-
-  return `${plainText.slice(0, maxLength).trimEnd()}…`;
-}
-
 export function getCategories(): string[] {
   if (!fs.existsSync(CONTENT_DIR)) return [];
 
@@ -60,7 +47,7 @@ export function getPostsByCategory(category: string): PostMeta[] {
 
       return {
         title: (data.title as string) ?? slug,
-        description: (data.description as string) || createExcerpt(content),
+        description: (data.description as string) ?? "",
         date: (data.date as string) ?? "",
         tags: (data.tags as string[]) ?? [],
         category,
@@ -112,7 +99,7 @@ export async function getPost(category: string, slug: string) {
   return {
     meta: {
       title: (data.title as string) ?? slug,
-      description: (data.description as string) || createExcerpt(content),
+      description: (data.description as string) ?? "",
       date: (data.date as string) ?? "",
       tags: (data.tags as string[]) ?? [],
       category,

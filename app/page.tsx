@@ -8,40 +8,23 @@ import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
-import Button from "@mui/material/Button";
 
 export default function HomePage() {
   const categorySummaries = getCategorySummaries();
   const latestPosts = getAllPosts().slice(0, 6);
-  const tags = getTags().slice(0, 14);
-  const firstCategory = categorySummaries[0]?.category;
+  const tags = getTags().slice(0, 12);
 
   return (
     <Stack spacing={5}>
-      <Card
-        sx={{
-          background: "linear-gradient(135deg, #ffffff 10%, #eef3ff 100%)",
-          borderRadius: 4,
-        }}
-      >
-        <CardContent sx={{ p: { xs: 3, md: 5 } }}>
-          <Stack spacing={2}>
-            <Typography variant="h3">A clean, practical, and modern technical blog.</Typography>
-            <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 820 }}>
-              Learn through concise real-world tutorials on Linux, Docker, Next.js, and
-              developer tooling. Everything is written in Markdown and deployed on Vercel.
-            </Typography>
-            <Stack direction="row" spacing={1.5}>
-              <Link href={firstCategory ? `/${firstCategory}` : "/"} style={{ textDecoration: "none" }}>
-                <Button variant="contained">Start reading</Button>
-              </Link>
-              <Link href="/" style={{ textDecoration: "none" }}>
-                <Button variant="outlined">Browse latest posts</Button>
-              </Link>
-            </Stack>
-          </Stack>
-        </CardContent>
-      </Card>
+      <Box>
+        <Typography variant="h3" gutterBottom fontWeight={700}>
+          Technical notes, tutorials, and field-tested workflows.
+        </Typography>
+        <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 850 }}>
+          Welcome to a complete engineering blog powered by Markdown, Next.js, and
+          Vercel. Browse by category, read the latest posts, and explore topic tags.
+        </Typography>
+      </Box>
 
       <section>
         <Typography variant="h5" gutterBottom>
@@ -56,14 +39,18 @@ export default function HomePage() {
                   sx={{
                     borderRadius: 3,
                     transition: "all 0.2s ease",
-                    "&:hover": { transform: "translateY(-2px)", boxShadow: 3 },
+                    "&:hover": { transform: "translateY(-2px)", boxShadow: 2 },
                   }}
                 >
                   <CardContent>
-                    <Typography variant="h6">{summary.category.toUpperCase()}</Typography>
+                    <Typography variant="h6" fontWeight={700}>
+                      {summary.category.toUpperCase()}
+                    </Typography>
                     <Typography color="text.secondary" sx={{ mt: 1 }}>
                       {summary.postCount} post{summary.postCount === 1 ? "" : "s"}
-                      {summary.latestPostDate ? ` • updated ${summary.latestPostDate}` : ""}
+                      {summary.latestPostDate
+                        ? ` • latest ${summary.latestPostDate}`
+                        : " • no dates yet"}
                     </Typography>
                   </CardContent>
                 </Card>
@@ -89,7 +76,7 @@ export default function HomePage() {
                     height: "100%",
                     borderRadius: 3,
                     transition: "all 0.2s ease",
-                    "&:hover": { transform: "translateY(-2px)", boxShadow: 3 },
+                    "&:hover": { transform: "translateY(-2px)", boxShadow: 2 },
                   }}
                 >
                   <CardContent>
@@ -99,11 +86,11 @@ export default function HomePage() {
                     <Typography variant="h6" sx={{ mt: 0.5 }}>
                       {post.title}
                     </Typography>
-                    {!!post.description && (
+                    {post.description ? (
                       <Typography color="text.secondary" sx={{ mt: 1 }}>
                         {post.description}
                       </Typography>
-                    )}
+                    ) : null}
                     <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
                       {post.date || "No publish date"}
                     </Typography>
@@ -117,13 +104,13 @@ export default function HomePage() {
 
       <section>
         <Typography variant="h5" gutterBottom>
-          Topics
+          Popular topics
         </Typography>
-        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+        <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
           {tags.map((tag) => (
             <Chip key={tag} label={tag} />
           ))}
-        </Box>
+        </Stack>
       </section>
     </Stack>
   );
