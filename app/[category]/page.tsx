@@ -1,15 +1,26 @@
+import type { Metadata } from "next";
+import Grid from "@mui/material/Grid";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 import Link from "next/link";
 import { getCategories, getPostsByCategory } from "@/lib/content";
-import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Chip from "@mui/material/Chip";
-import Stack from "@mui/material/Stack";
-import Button from "@mui/material/Button";
+import { PostCard } from "@/components/post-card";
 
 export function generateStaticParams() {
   return getCategories().map((category) => ({ category }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ category: string }>;
+}): Promise<Metadata> {
+  const { category } = await params;
+  return {
+    title: `${category} posts`,
+    description: `Explore ${category} articles on Markup Journal.`,
+  };
 }
 
 export default async function CategoryPage({
@@ -21,66 +32,29 @@ export default async function CategoryPage({
   const posts = getPostsByCategory(category);
 
   return (
-    <Stack spacing={3}>
-      <div>
-        <Typography variant="h4" fontWeight={700} gutterBottom>
-          {category.toUpperCase()}
+    <Stack spacing={4}>
+      <Stack spacing={1}>
+        <Typography variant="overline" color="primary.main" fontWeight={700}>
+          Category archive
         </Typography>
+        <Typography variant="h2">{category}</Typography>
         <Typography color="text.secondary">
-          {posts.length} article{posts.length === 1 ? "" : "s"} in this category.
+          {posts.length} article{posts.length === 1 ? "" : "s"} in this collection.
         </Typography>
-      </div>
+        <Link href="/blog" style={{ textDecoration: "none" }}>
+          <Button variant="text" sx={{ width: "fit-content", px: 0 }}>← Back to blog index</Button>
+        </Link>
+      </Stack>
 
-      <Link href="/" style={{ textDecoration: "none", width: "fit-content" }}>
-        <Button variant="text">← Back home</Button>
-      </Link>
-
-      <Grid container spacing={2}>
+      <Grid container spacing={2.5}>
         {posts.map((post) => (
-          <Grid key={`${post.category}-${post.slug}`} size={{ xs: 12 }}>
-            <Link href={`/${post.category}/${post.slug}`} style={{ textDecoration: "none" }}>
-              <Card
-                variant="outlined"
-                sx={{
-                  borderRadius: 3,
-                  transition: "all 0.2s ease",
-                  "&:hover": { transform: "translateY(-2px)", boxShadow: 2 },
-                }}
-              >
-                <CardContent>
-                  <Typography variant="h6">{post.title}</Typography>
-                  {post.description ? (
-                    <Typography color="text.secondary" sx={{ mt: 1 }}>
-                      {post.description}
-                    </Typography>
-                  ) : null}
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-                    {post.date || "No publish date"} • {post.readingTime}
-                  </Typography>
-                  <Stack
-                    direction="row"
-                    spacing={1}
-                    useFlexGap
-                    flexWrap="wrap"
-                    sx={{ mt: 1.5 }}
-                  >
-                    {(post.tags ?? []).map((tag) => (
-                      <Chip key={tag} label={tag} size="small" />
-                    ))}
-                  </Stack>
-                </CardContent>
-              </Card>
-            </Link>
+          <Grid key={post.slug} size={{ xs: 12, md: 6 }}>
+            <PostCard post={post} />
           </Grid>
         ))}
       </Grid>
 
-      {posts.length === 0 ? (
-        <Typography color="text.secondary">
-          No posts found in this category yet. Add markdown files under
-          <code> content/{category}</code>.
-        </Typography>
-      ) : null}
+      {!posts.length ? <Typography color="text.secondary">No posts yet in this category.</Typography> : null}
     </Stack>
   );
 }

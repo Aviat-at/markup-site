@@ -1,117 +1,111 @@
-import Link from "next/link";
-import { getAllPosts, getCategorySummaries, getTags } from "@/lib/content";
-import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
 import Box from "@mui/material/Box";
-import Divider from "@mui/material/Divider";
+import Link from "next/link";
+import { getAllPosts, getCategorySummaries, getFeaturedPosts, getTags } from "@/lib/content";
+import { FeaturedPostCard } from "@/components/featured-post-card";
+import { PostCard } from "@/components/post-card";
+import { SectionHeader } from "@/components/section-header";
+import { NewsletterCard } from "@/components/newsletter-card";
 
 export default function HomePage() {
-  const categorySummaries = getCategorySummaries();
-  const latestPosts = getAllPosts().slice(0, 6);
-  const tags = getTags().slice(0, 12);
+  const posts = getAllPosts();
+  const featuredPost = getFeaturedPosts(1)[0];
+  const latestPosts = posts.slice(0, 6);
+  const trendingPosts = [...posts].sort((a, b) => b.tags.length - a.tags.length).slice(0, 3);
+  const categories = getCategorySummaries();
+  const tags = getTags().slice(0, 14);
 
   return (
-    <Stack spacing={5}>
-      <Box>
-        <Typography variant="h3" gutterBottom fontWeight={700}>
-          Technical notes, tutorials, and field-tested workflows.
+    <Stack spacing={7}>
+      <Stack spacing={2.5}>
+        <Typography variant="overline" color="primary.main" fontWeight={700}>
+          Modern engineering blog platform
         </Typography>
-        <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 850 }}>
-          Welcome to a complete engineering blog powered by Markdown, Next.js, and
-          Vercel. Browse by category, read the latest posts, and explore topic tags.
+        <Typography variant="h1" sx={{ maxWidth: 950 }}>
+          Insights on frontend engineering, product design, and scalable web experiences.
         </Typography>
+        <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 760 }}>
+          Markup Journal publishes practical tutorials and strategic thinking for teams building modern digital products.
+        </Typography>
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
+          <Link href="/blog" style={{ textDecoration: "none" }}>
+            <Button variant="contained" size="large">Explore articles</Button>
+          </Link>
+          <Link href="/about" style={{ textDecoration: "none" }}>
+            <Button variant="outlined" size="large">Learn about us</Button>
+          </Link>
+        </Stack>
+      </Stack>
+
+      {featuredPost ? <FeaturedPostCard post={featuredPost} /> : null}
+
+      <Box component="section">
+        <SectionHeader
+          eyebrow="Latest"
+          title="Fresh from the blog"
+          subtitle="Deep dives, practical walkthroughs, and design-forward engineering advice."
+        />
+        <Grid container spacing={2.5}>
+          {latestPosts.map((post) => (
+            <Grid key={post.slug} size={{ xs: 12, md: 6, lg: 4 }}>
+              <PostCard post={post} compact />
+            </Grid>
+          ))}
+        </Grid>
       </Box>
 
-      <section>
-        <Typography variant="h5" gutterBottom>
-          Browse categories
-        </Typography>
+      <Box component="section">
+        <SectionHeader eyebrow="Trending" title="Most discussed topics" />
+        <Grid container spacing={2.5}>
+          {trendingPosts.map((post) => (
+            <Grid key={`${post.category}-${post.slug}`} size={{ xs: 12, md: 4 }}>
+              <PostCard post={post} />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+
+      <Box component="section">
+        <SectionHeader eyebrow="Categories" title="Discover by category" />
         <Grid container spacing={2}>
-          {categorySummaries.map((summary) => (
-            <Grid key={summary.category} size={{ xs: 12, md: 6 }}>
-              <Link href={`/${summary.category}`} style={{ textDecoration: "none" }}>
-                <Card
+          {categories.map((category) => (
+            <Grid key={category.category} size={{ xs: 12, sm: 6, lg: 3 }}>
+              <Link href={`/${category.category}`} style={{ textDecoration: "none" }}>
+                <Button
                   variant="outlined"
+                  fullWidth
                   sx={{
-                    borderRadius: 3,
-                    transition: "all 0.2s ease",
-                    "&:hover": { transform: "translateY(-2px)", boxShadow: 2 },
+                    p: 2,
+                    justifyContent: "space-between",
                   }}
                 >
-                  <CardContent>
-                    <Typography variant="h6" fontWeight={700}>
-                      {summary.category.toUpperCase()}
-                    </Typography>
-                    <Typography color="text.secondary" sx={{ mt: 1 }}>
-                      {summary.postCount} post{summary.postCount === 1 ? "" : "s"}
-                      {summary.latestPostDate
-                        ? ` • latest ${summary.latestPostDate}`
-                        : " • no dates yet"}
-                    </Typography>
-                  </CardContent>
-                </Card>
+                  <span>{category.category}</span>
+                  <Typography variant="body2" color="text.secondary">
+                    {category.postCount}
+                  </Typography>
+                </Button>
               </Link>
             </Grid>
           ))}
         </Grid>
-      </section>
+      </Box>
 
-      <Divider />
-
-      <section>
-        <Typography variant="h5" gutterBottom>
-          Latest posts
-        </Typography>
-        <Grid container spacing={2}>
-          {latestPosts.map((post) => (
-            <Grid key={`${post.category}-${post.slug}`} size={{ xs: 12, md: 6 }}>
-              <Link href={`/${post.category}/${post.slug}`} style={{ textDecoration: "none" }}>
-                <Card
-                  variant="outlined"
-                  sx={{
-                    height: "100%",
-                    borderRadius: 3,
-                    transition: "all 0.2s ease",
-                    "&:hover": { transform: "translateY(-2px)", boxShadow: 2 },
-                  }}
-                >
-                  <CardContent>
-                    <Typography variant="overline" color="text.secondary">
-                      {post.category.toUpperCase()} • {post.readingTime}
-                    </Typography>
-                    <Typography variant="h6" sx={{ mt: 0.5 }}>
-                      {post.title}
-                    </Typography>
-                    {post.description ? (
-                      <Typography color="text.secondary" sx={{ mt: 1 }}>
-                        {post.description}
-                      </Typography>
-                    ) : null}
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-                      {post.date || "No publish date"}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Link>
-            </Grid>
-          ))}
-        </Grid>
-      </section>
-
-      <section>
-        <Typography variant="h5" gutterBottom>
-          Popular topics
-        </Typography>
+      <Box component="section">
+        <SectionHeader eyebrow="Popular tags" title="Explore quick topics" />
         <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
           {tags.map((tag) => (
-            <Chip key={tag} label={tag} />
+            <Link key={tag} href={`/tags/${encodeURIComponent(tag)}`} style={{ textDecoration: "none" }}>
+              <Chip label={`# ${tag}`} clickable />
+            </Link>
           ))}
         </Stack>
-      </section>
+      </Box>
+
+      <NewsletterCard />
     </Stack>
   );
 }
