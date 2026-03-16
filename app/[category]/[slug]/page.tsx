@@ -131,7 +131,7 @@ export default async function PostPage({
                 <Typography variant="h6" mb={1.5}>Table of contents</Typography>
                 <Stack spacing={1}>
                   {headings.map((heading) => (
-                    <Link key={heading.id} href={`#${heading.id}`} style={{ paddingLeft: `${(heading.level - 1) * 10}px` }}>
+                    <Link key={heading.id} href={`#${heading.id}`} style={{ paddingLeft: `${(heading.level - 1) * 10}px`, textDecoration: "none", color: "inherit", fontSize: "0.875rem" }}>
                       {heading.text}
                     </Link>
                   ))}

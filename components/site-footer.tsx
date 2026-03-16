@@ -13,9 +13,9 @@ export function SiteFooter() {
             © {new Date().getFullYear()} Markup Journal. Crafted with Next.js + MUI.
           </Typography>
           <Stack direction="row" spacing={2}>
-            <Link href="/about">About</Link>
-            <Link href="/contact">Contact</Link>
-            <Link href="/blog">Blog</Link>
+            <Link href="/about" style={{ textDecoration: "none", color: "inherit" }}>About</Link>
+            <Link href="/contact" style={{ textDecoration: "none", color: "inherit" }}>Contact</Link>
+            <Link href="/blog" style={{ textDecoration: "none", color: "inherit" }}>Blog</Link>
           </Stack>
         </Stack>
       </Container>

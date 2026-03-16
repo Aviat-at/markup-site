@@ -51,7 +51,7 @@ export default function HomePage() {
         />
         <Grid container spacing={2.5}>
           {latestPosts.map((post) => (
-            <Grid key={post.slug} size={{ xs: 12, md: 6, lg: 4 }}>
+            <Grid key={`${post.category}-${post.slug}`} size={{ xs: 12, md: 6, lg: 4 }}>
               <PostCard post={post} compact />
             </Grid>
           ))}

@@ -39,7 +39,7 @@ export function BlogFilters({ posts, categories, tags }: Props) {
     });
 
     return result.sort((a, b) => {
-      if (sort === "readTime") return a.readingTime.localeCompare(b.readingTime);
+      if (sort === "readTime") return parseInt(a.readingTime) - parseInt(b.readingTime);
       if (sort === "title") return a.title.localeCompare(b.title);
       return b.date.localeCompare(a.date);
     });
