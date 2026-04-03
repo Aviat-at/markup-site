@@ -22,45 +22,133 @@ export default async function PostPage({
 }: {
   params: Promise<{ category: string; slug: string }>;
 }) {
-  const { category, slug } = await params; // ✅ unwrap promise
+  const { category, slug } = await params;
   const post = await getPost(category, slug);
 
-  if (!post) return <Typography>Post not found.</Typography>;
+  if (!post) {
+    return (
+      <Box sx={{ textAlign: "center", py: 10 }}>
+        <Typography variant="h5" color="text.secondary">
+          Post not found.
+        </Typography>
+        <Link href="/" style={{ textDecoration: "none" }}>
+          <Typography
+            variant="body2"
+            sx={{ color: "primary.main", mt: 2, display: "block" }}
+          >
+            ← Back home
+          </Typography>
+        </Link>
+      </Box>
+    );
+  }
 
   return (
-    <Box>
-      <Link href={`/${category}`}>← Back to {category}</Link>
-
-      <Typography variant="h3" sx={{ mt: 2 }} gutterBottom>
-        {post.meta.title}
-      </Typography>
-
-      <Typography variant="body2" color="text.secondary" gutterBottom>
-        {post.meta.date ? `Updated: ${post.meta.date}` : ""}
-      </Typography>
-
-      <Stack direction="row" spacing={1} sx={{ my: 2, flexWrap: "wrap" }}>
-        {(post.meta.tags ?? []).map((t) => (
-          <Chip key={t} label={t} size="small" />
-        ))}
-      </Stack>
-
-      <Divider sx={{ mb: 2 }} />
-
+    <Box sx={{ maxWidth: 760, mx: "auto" }}>
+      {/* Breadcrumb */}
       <Box
-        sx={{
-          "& h1, & h2, & h3": { mt: 3 },
-          "& pre": {
-            p: 2,
-            overflow: "auto",
-            borderRadius: 2,
-            bgcolor: "rgba(255,255,255,0.06)",
-          },
-          "& code": { fontFamily: "monospace" },
-          "& a": { color: "primary.main" },
-        }}
+        className="animate-fade-in"
+        sx={{ display: "flex", alignItems: "center", gap: 1, mb: 5 }}
+      >
+        <Link href="/" style={{ textDecoration: "none" }}>
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+              "&:hover": { color: "primary.light" },
+              transition: "color 0.2s",
+            }}
+          >
+            Home
+          </Typography>
+        </Link>
+        <Typography variant="body2" color="text.secondary">
+          /
+        </Typography>
+        <Link href={`/${category}`} style={{ textDecoration: "none" }}>
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+              "&:hover": { color: "primary.light" },
+              transition: "color 0.2s",
+            }}
+          >
+            {category}
+          </Typography>
+        </Link>
+        <Typography variant="body2" color="text.secondary">
+          /
+        </Typography>
+        <Typography
+          variant="body2"
+          sx={{ color: "primary.light", fontWeight: 500 }}
+          noWrap
+        >
+          {post.meta.title}
+        </Typography>
+      </Box>
+
+      {/* Title block */}
+      <Box className="animate-fade-in-up" sx={{ mb: 4 }}>
+        <Typography
+          variant="h3"
+          sx={{ fontWeight: 800, mb: 1.5, lineHeight: 1.2 }}
+        >
+          {post.meta.title}
+        </Typography>
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: 2,
+          }}
+        >
+          {post.meta.date && (
+            <Typography variant="caption" color="text.secondary">
+              Updated {post.meta.date}
+            </Typography>
+          )}
+
+          {(post.meta.tags ?? []).length > 0 && (
+            <Stack direction="row" spacing={0.75} flexWrap="wrap">
+              {(post.meta.tags ?? []).map((t) => (
+                <Chip key={t} label={t} size="small" />
+              ))}
+            </Stack>
+          )}
+        </Box>
+      </Box>
+
+      <Divider sx={{ mb: 5 }} />
+
+      {/* Markdown content */}
+      <Box
+        className="prose-content animate-fade-in-up stagger-2"
         dangerouslySetInnerHTML={{ __html: post.contentHtml }}
       />
+
+      <Divider sx={{ mt: 8, mb: 4 }} />
+
+      {/* Back link */}
+      <Link href={`/${category}`} style={{ textDecoration: "none" }}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: "text.secondary",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 0.5,
+            "&:hover": { color: "primary.light" },
+            transition: "color 0.2s",
+            fontWeight: 500,
+          }}
+        >
+          ← Back to {category}
+        </Typography>
+      </Link>
     </Box>
   );
 }
