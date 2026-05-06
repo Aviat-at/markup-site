@@ -48,11 +48,10 @@ const theme = createTheme({
           backgroundColor: "rgba(255,255,255,0.03)",
           border: "1px solid rgba(255,255,255,0.07)",
           backdropFilter: "blur(10px)",
-          transition: "transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease",
+          transition: "box-shadow 0.3s ease, border-color 0.3s ease",
           "&:hover": {
             borderColor: "rgba(99,102,241,0.5)",
             boxShadow: "0 0 32px rgba(99,102,241,0.2), 0 8px 32px rgba(0,0,0,0.4)",
-            transform: "translateY(-5px)",
           },
         },
       },
