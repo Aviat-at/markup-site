@@ -5,7 +5,7 @@ import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Box from "@mui/material/Box";
-import { Terminal, Code, Box as BoxIcon, FileCode, Beaker, Zap } from "lucide-react";
+import { Terminal, Code, Box as BoxIcon, FileCode, Beaker, Zap, GitBranch } from "lucide-react";
 import { FlipReveal, FlipCardHover } from "./components/AnimatedComponents";
 
 const CATEGORY_META: Record<
@@ -36,6 +36,11 @@ const CATEGORY_META: Record<
     icon: <Beaker size={20} />,
     color: "#ec4899",
     description: "Testing strategies & examples",
+  },
+  git: {
+    icon: <GitBranch size={20} />,
+    color: "#f97316",
+    description: "Git workflows, commit conventions & version control",
   },
 };
 
