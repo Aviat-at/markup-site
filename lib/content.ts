@@ -3,6 +3,7 @@ import path from "path";
 import matter from "gray-matter";
 import { remark } from "remark";
 import html from "remark-html";
+import remarkGfm from "remark-gfm";
 
 export type PostMeta = {
   title: string;
@@ -53,7 +54,7 @@ export async function getPost(category: string, slug: string) {
   const raw = fs.readFileSync(fullPath, "utf8");
   const { data, content } = matter(raw);
 
-  const processed = await remark().use(html).process(content);
+  const processed = await remark().use(remarkGfm).use(html).process(content);
   const contentHtml = processed.toString();
 
   return {
