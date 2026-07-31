@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { getCategories, getPostsByCategory } from "@/lib/content";
-import { getCategoryMeta } from "@/lib/site";
+import { articleHref, getCategoryMeta } from "@/lib/site";
 
 export function generateStaticParams() {
   return getCategories().map((category) => ({ category }));
@@ -34,7 +34,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
 
       <div className="category-list">
         {posts.map((post, index) => (
-          <Link href={`/${post.category}/${post.slug}`} className="category-article" key={post.slug}>
+          <Link href={articleHref(post.category, post.slug)} className="category-article" key={post.slug}>
             <span className="row-index">{String(index + 1).padStart(2, "0")}</span>
             <div className="category-article-copy">
               <span className="article-meta">{post.date || "Field note"} · {post.readingTime} min read</span>

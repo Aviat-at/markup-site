@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Clock3 } from "lucide-react";
 import { getCategories, getPostsByCategory, getPost } from "@/lib/content";
-import { getCategoryMeta } from "@/lib/site";
+import { articleHref, categoryHref, getCategoryMeta } from "@/lib/site";
 import MarkdownContent from "@/app/components/MarkdownContent";
 
 export function generateStaticParams() {
@@ -37,7 +37,7 @@ export default async function PostPage({ params }: { params: Promise<{ category:
       <div className="shell">
         <nav className="breadcrumbs" aria-label="Breadcrumb">
           <Link href="/">Home</Link><span>/</span>
-          <Link href={`/${category}`}>{categoryInfo.label}</Link><span>/</span>
+          <Link href={categoryHref(category)}>{categoryInfo.label}</Link><span>/</span>
           <span>Article</span>
         </nav>
 
@@ -70,17 +70,17 @@ export default async function PostPage({ params }: { params: Promise<{ category:
           </div>
           <div className="article-nav">
             {previous ? (
-              <Link href={`/${category}/${previous.slug}`}>
+              <Link href={articleHref(category, previous.slug)}>
                 <span><ArrowLeft size={14} /> Previous</span><strong>{previous.title}</strong>
               </Link>
             ) : <span />}
             {next && (
-              <Link href={`/${category}/${next.slug}`} className="next">
+              <Link href={articleHref(category, next.slug)} className="next">
                 <span>Next <ArrowRight size={14} /></span><strong>{next.title}</strong>
               </Link>
             )}
           </div>
-          <Link href={`/${category}`} className="back-link"><ArrowLeft size={15} /> Back to {categoryInfo.label}</Link>
+          <Link href={categoryHref(category)} className="back-link"><ArrowLeft size={15} /> Back to {categoryInfo.label}</Link>
         </footer>
       </div>
     </article>

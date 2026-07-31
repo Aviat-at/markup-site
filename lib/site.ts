@@ -9,6 +9,14 @@ import {
 
 export const SITE_URL = "https://blog.akashtharindu.com";
 
+export function categoryHref(category: string) {
+  return `/${encodeURIComponent(category)}`;
+}
+
+export function articleHref(category: string, slug: string) {
+  return `${categoryHref(category)}/${encodeURIComponent(slug)}`;
+}
+
 export const categoryMeta: Record<
   string,
   { label: string; description: string; icon: LucideIcon; accent: string }

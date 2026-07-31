@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { getAllPosts } from "@/lib/content";
-import { getCategoryMeta } from "@/lib/site";
+import { articleHref, getCategoryMeta } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "All articles",
@@ -35,7 +35,7 @@ export default function ArticlesPage() {
 
       <div className="library-table">
         {posts.map((post, index) => (
-          <Link href={`/${post.category}/${post.slug}`} className="library-row" key={`${post.category}-${post.slug}`}>
+          <Link href={articleHref(post.category, post.slug)} className="library-row" key={`${post.category}-${post.slug}`}>
             <span className="row-index">{String(index + 1).padStart(2, "0")}</span>
             <div>
               <span className="article-meta">
