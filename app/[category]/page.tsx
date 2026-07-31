@@ -34,13 +34,13 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
 
       <div className="category-list">
         {posts.map((post, index) => (
-          <Link href={articleHref(post.category, post.slug)} className="category-article" key={post.slug}>
+          <Link href={articleHref(post.category, post.slug)} className="category-article" key={index}>
             <span className="row-index">{String(index + 1).padStart(2, "0")}</span>
             <div className="category-article-copy">
               <span className="article-meta">{post.date || "Field note"} · {post.readingTime} min read</span>
               <h2>{post.title}</h2>
               <p>{post.excerpt}</p>
-              <div className="tag-list">{post.tags?.slice(0, 3).map(tag => <span key={tag}>{tag}</span>)}</div>
+              <div className="tag-list">{post.tags?.slice(0, 3).map((tag, tagIndex) => <span key={tagIndex}>{tag}</span>)}</div>
             </div>
             <ArrowUpRight className="category-arrow" size={22} />
           </Link>

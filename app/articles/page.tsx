@@ -38,7 +38,7 @@ export default function ArticlesPage() {
           <Link
             href={`/${encodeURIComponent(post.category)}/${encodeURIComponent(post.slug)}`}
             className="library-row"
-            key={`${post.category}-${post.slug}`}
+            key={index}
           >
             <span className="row-index">{String(index + 1).padStart(2, "0")}</span>
             <div>

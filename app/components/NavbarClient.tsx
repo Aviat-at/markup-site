@@ -65,10 +65,10 @@ export default function NavbarClient({ categories }: { categories: string[] }) {
                   onClick={() => setTopicsOpen(false)}
                 />
                 <div className="topics-popover" role="menu">
-                  {categories.map((category) => {
+                {categories.map((category, index) => {
                     const meta = getCategoryMeta(category);
                     return (
-                      <Link href={`/${encodeURIComponent(category)}`} key={category} role="menuitem" onClick={() => setTopicsOpen(false)}>
+                      <Link href={`/${encodeURIComponent(category)}`} key={index} role="menuitem" onClick={() => setTopicsOpen(false)}>
                         <meta.icon size={16} />
                         <span>
                           <strong>{meta.label}</strong>
@@ -101,8 +101,8 @@ export default function NavbarClient({ categories }: { categories: string[] }) {
             <nav>
               <Link href="/" onClick={() => setMobileOpen(false)}>Home</Link>
               <Link href="/articles" onClick={() => setMobileOpen(false)}>All articles</Link>
-              {categories.map((category) => (
-                <Link href={`/${encodeURIComponent(category)}`} key={category} onClick={() => setMobileOpen(false)}>{getCategoryMeta(category).label}</Link>
+              {categories.map((category, index) => (
+                <Link href={`/${encodeURIComponent(category)}`} key={index} onClick={() => setMobileOpen(false)}>{getCategoryMeta(category).label}</Link>
               ))}
               <Link href="/about" onClick={() => setMobileOpen(false)}>About me</Link>
               <Link href="/about-this-site" onClick={() => setMobileOpen(false)}>About this site</Link>

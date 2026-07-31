@@ -77,7 +77,7 @@ export default function HomePage() {
             <Link
               href={`/${encodeURIComponent(post.category)}/${encodeURIComponent(post.slug)}`}
               className="article-row"
-              key={`${post.category}-${post.slug}`}
+              key={index}
             >
               <span className="row-index">{String(index + 2).padStart(2, "0")}</span>
               <div>
@@ -111,7 +111,7 @@ export default function HomePage() {
                 <Link
                   href={`/${encodeURIComponent(category)}`}
                   className="topic-card"
-                  key={category}
+                  key={index}
                   style={{ "--topic-accent": meta.accent } as React.CSSProperties}
                 >
                   <span className="topic-number">{String(index + 1).padStart(2, "0")}</span>

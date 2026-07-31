@@ -56,8 +56,8 @@ export default async function PostPage({ params }: { params: Promise<{ category:
           <aside className="article-aside">
             <span>On this page</span>
             <nav>
-              {post.headings.slice(0, 8).map(heading => (
-                <a href={`#${heading.id}`} className={heading.level === 3 ? "subheading" : ""} key={heading.id}>{heading.text}</a>
+              {post.headings.slice(0, 8).map((heading, index) => (
+                <a href={`#${heading.id}`} className={heading.level === 3 ? "subheading" : ""} key={index}>{heading.text}</a>
               ))}
             </nav>
           </aside>
@@ -66,7 +66,7 @@ export default async function PostPage({ params }: { params: Promise<{ category:
 
         <footer className="article-footer">
           <div className="tag-list">
-            {post.meta.tags?.map(tag => <span key={tag}>{tag}</span>)}
+            {post.meta.tags?.map((tag, index) => <span key={index}>{tag}</span>)}
           </div>
           <div className="article-nav">
             {previous ? (
