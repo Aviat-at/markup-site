@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, ChevronDown, Menu, X } from "lucide-react";
-import { categoryHref, getCategoryMeta } from "@/lib/site";
+import { getCategoryMeta } from "@/lib/site";
 
 export default function NavbarClient({ categories }: { categories: string[] }) {
   const [topicsOpen, setTopicsOpen] = useState(false);
@@ -68,7 +68,7 @@ export default function NavbarClient({ categories }: { categories: string[] }) {
                   {categories.map((category) => {
                     const meta = getCategoryMeta(category);
                     return (
-                      <Link href={categoryHref(category)} key={category} role="menuitem" onClick={() => setTopicsOpen(false)}>
+                      <Link href={`/${encodeURIComponent(category)}`} key={category} role="menuitem" onClick={() => setTopicsOpen(false)}>
                         <meta.icon size={16} />
                         <span>
                           <strong>{meta.label}</strong>
@@ -102,7 +102,7 @@ export default function NavbarClient({ categories }: { categories: string[] }) {
               <Link href="/" onClick={() => setMobileOpen(false)}>Home</Link>
               <Link href="/articles" onClick={() => setMobileOpen(false)}>All articles</Link>
               {categories.map((category) => (
-                <Link href={categoryHref(category)} key={category} onClick={() => setMobileOpen(false)}>{getCategoryMeta(category).label}</Link>
+                <Link href={`/${encodeURIComponent(category)}`} key={category} onClick={() => setMobileOpen(false)}>{getCategoryMeta(category).label}</Link>
               ))}
               <Link href="/about" onClick={() => setMobileOpen(false)}>About me</Link>
               <Link href="/about-this-site" onClick={() => setMobileOpen(false)}>About this site</Link>

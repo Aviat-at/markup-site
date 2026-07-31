@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowDownRight, ArrowRight, ArrowUpRight, MapPin } from "lucide-react";
 import { getAllPosts, getCategories } from "@/lib/content";
-import { articleHref, categoryHref, getCategoryMeta } from "@/lib/site";
+import { articleHref, getCategoryMeta } from "@/lib/site";
 import { Reveal } from "./components/AnimatedComponents";
 
 function formatDate(date?: string) {
@@ -74,7 +74,11 @@ export default function HomePage() {
 
         <div className="article-list">
           {posts.slice(1, 5).map((post, index) => (
-            <Link href={articleHref(post.category, post.slug)} className="article-row" key={`${post.category}-${post.slug}`}>
+            <Link
+              href={`/${encodeURIComponent(post.category)}/${encodeURIComponent(post.slug)}`}
+              className="article-row"
+              key={`${post.category}-${post.slug}`}
+            >
               <span className="row-index">{String(index + 2).padStart(2, "0")}</span>
               <div>
                 <span className="article-meta">{getCategoryMeta(post.category).label} · {post.readingTime} min read</span>
@@ -104,7 +108,12 @@ export default function HomePage() {
               const meta = getCategoryMeta(category);
               const count = posts.filter((post) => post.category === category).length;
               return (
-                <Link href={categoryHref(category)} className="topic-card" key={category} style={{ "--topic-accent": meta.accent } as React.CSSProperties}>
+                <Link
+                  href={`/${encodeURIComponent(category)}`}
+                  className="topic-card"
+                  key={category}
+                  style={{ "--topic-accent": meta.accent } as React.CSSProperties}
+                >
                   <span className="topic-number">{String(index + 1).padStart(2, "0")}</span>
                   <meta.icon size={25} strokeWidth={1.5} />
                   <h3>{meta.label}</h3>
