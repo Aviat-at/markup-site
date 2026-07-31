@@ -2,8 +2,22 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { remark } from "remark";
-import html from "remark-html";
 import remarkGfm from "remark-gfm";
+
+export type MarkdownNode = {
+  type: string;
+  value?: string;
+  depth?: number;
+  ordered?: boolean;
+  start?: number | null;
+  url?: string;
+  alt?: string;
+  title?: string | null;
+  lang?: string | null;
+  id?: string;
+  align?: Array<"left" | "right" | "center" | null>;
+  children?: MarkdownNode[];
+};
 
 export type PostMeta = {
   title: string;
@@ -86,25 +100,34 @@ export async function getPost(category: string, slug: string) {
   const raw = fs.readFileSync(fullPath, "utf8");
   const { data, content } = matter(raw);
 
-  const processed = await remark().use(remarkGfm).use(html).process(content);
+  const processor = remark().use(remarkGfm);
+  const contentTree = processor.parse(content) as MarkdownNode;
   const usedIds = new Map<string, number>();
   const headings: { id: string; text: string; level: number }[] = [];
-  const contentHtml = processed.toString().replace(
-    /<h([2-3])>(.*?)<\/h\1>/g,
-    (_, level: string, inner: string) => {
-      const text = inner.replace(/<[^>]+>/g, "");
+
+  function nodeText(node: MarkdownNode): string {
+    if (node.value) return node.value;
+    return (node.children ?? []).map(nodeText).join("");
+  }
+
+  function addHeadingIds(node: MarkdownNode) {
+    if (node.type === "heading" && node.depth && node.depth >= 2 && node.depth <= 3) {
+      const text = nodeText(node);
       const base = text
         .toLowerCase()
-        .replace(/&amp;/g, "and")
+        .replace(/&/g, "and")
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-|-$/g, "") || "section";
       const count = usedIds.get(base) ?? 0;
       usedIds.set(base, count + 1);
       const id = count ? `${base}-${count + 1}` : base;
-      headings.push({ id, text, level: Number(level) });
-      return `<h${level} id="${id}">${inner}</h${level}>`;
-    },
-  );
+      node.id = id;
+      headings.push({ id, text, level: node.depth });
+    }
+    node.children?.forEach(addHeadingIds);
+  }
+
+  addHeadingIds(contentTree);
   const details = contentDetails(content, data.description as string | undefined);
 
   return {
@@ -116,7 +139,7 @@ export async function getPost(category: string, slug: string) {
       slug,
       ...details,
     } as PostMeta,
-    contentHtml,
+    contentTree,
     headings,
   };
 }

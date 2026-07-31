@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, Clock3 } from "lucide-react";
 import { getCategories, getPostsByCategory, getPost } from "@/lib/content";
 import { getCategoryMeta } from "@/lib/site";
+import MarkdownContent from "@/app/components/MarkdownContent";
 
 export function generateStaticParams() {
   return getCategories().flatMap(category =>
@@ -60,7 +61,7 @@ export default async function PostPage({ params }: { params: Promise<{ category:
               ))}
             </nav>
           </aside>
-          <div className="prose-content" dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
+          <MarkdownContent tree={post.contentTree} />
         </div>
 
         <footer className="article-footer">
