@@ -11,9 +11,33 @@ export type PostMeta = {
   tags?: string[];
   category: string;
   slug: string;
+  excerpt: string;
+  readingTime: number;
 };
 
 const CONTENT_DIR = path.join(process.cwd(), "content");
+
+function cleanMarkdown(value: string) {
+  return value
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/!\[[^\]]*]\([^)]*\)/g, "")
+    .replace(/\[([^\]]+)]\([^)]*\)/g, "$1")
+    .replace(/[*_`>|~-]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function contentDetails(content: string, description?: string) {
+  const plain = cleanMarkdown(content);
+  return {
+    excerpt:
+      description?.trim() ||
+      `${plain.slice(0, 155).trim()}${plain.length > 155 ? "…" : ""}`,
+    readingTime: Math.max(1, Math.ceil(plain.split(/\s+/).length / 220)),
+  };
+}
 
 export function getCategories(): string[] {
   if (!fs.existsSync(CONTENT_DIR)) return [];
@@ -34,7 +58,8 @@ export function getPostsByCategory(category: string): PostMeta[] {
       const slug = file.replace(/\.md$/, "");
       const fullPath = path.join(categoryDir, file);
       const raw = fs.readFileSync(fullPath, "utf8");
-      const { data } = matter(raw);
+      const { data, content } = matter(raw);
+      const details = contentDetails(content, data.description as string | undefined);
 
       return {
         title: (data.title as string) ?? slug,
@@ -42,8 +67,15 @@ export function getPostsByCategory(category: string): PostMeta[] {
         tags: (data.tags as string[]) ?? [],
         category,
         slug,
+        ...details,
       };
     })
+    .sort((a, b) => ((a.date ?? "") < (b.date ?? "") ? 1 : -1));
+}
+
+export function getAllPosts(): PostMeta[] {
+  return getCategories()
+    .flatMap((category) => getPostsByCategory(category))
     .sort((a, b) => ((a.date ?? "") < (b.date ?? "") ? 1 : -1));
 }
 
@@ -55,7 +87,25 @@ export async function getPost(category: string, slug: string) {
   const { data, content } = matter(raw);
 
   const processed = await remark().use(remarkGfm).use(html).process(content);
-  const contentHtml = processed.toString();
+  const usedIds = new Map<string, number>();
+  const headings: { id: string; text: string; level: number }[] = [];
+  const contentHtml = processed.toString().replace(
+    /<h([2-3])>(.*?)<\/h\1>/g,
+    (_, level: string, inner: string) => {
+      const text = inner.replace(/<[^>]+>/g, "");
+      const base = text
+        .toLowerCase()
+        .replace(/&amp;/g, "and")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "") || "section";
+      const count = usedIds.get(base) ?? 0;
+      usedIds.set(base, count + 1);
+      const id = count ? `${base}-${count + 1}` : base;
+      headings.push({ id, text, level: Number(level) });
+      return `<h${level} id="${id}">${inner}</h${level}>`;
+    },
+  );
+  const details = contentDetails(content, data.description as string | undefined);
 
   return {
     meta: {
@@ -64,7 +114,9 @@ export async function getPost(category: string, slug: string) {
       tags: (data.tags as string[]) ?? [],
       category,
       slug,
+      ...details,
     } as PostMeta,
     contentHtml,
+    headings,
   };
 }

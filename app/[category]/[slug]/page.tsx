@@ -1,162 +1,87 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowLeft, ArrowRight, Clock3 } from "lucide-react";
 import { getCategories, getPostsByCategory, getPost } from "@/lib/content";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import Chip from "@mui/material/Chip";
-import Stack from "@mui/material/Stack";
-import Divider from "@mui/material/Divider";
-import { FlipReveal } from "../../components/AnimatedComponents";
+import { getCategoryMeta } from "@/lib/site";
 
 export function generateStaticParams() {
-  const categories = getCategories();
-  const params: { category: string; slug: string }[] = [];
-
-  for (const c of categories) {
-    const posts = getPostsByCategory(c);
-    for (const p of posts) params.push({ category: c, slug: p.slug });
-  }
-  return params;
+  return getCategories().flatMap(category =>
+    getPostsByCategory(category).map(post => ({ category, slug: post.slug })),
+  );
 }
 
-export default async function PostPage({
-  params,
-}: {
-  params: Promise<{ category: string; slug: string }>;
-}) {
+export async function generateMetadata({ params }: { params: Promise<{ category: string; slug: string }> }): Promise<Metadata> {
+  const { category, slug } = await params;
+  const post = await getPost(category, slug);
+  if (!post) return { title: "Article not found" };
+  return { title: post.meta.title, description: post.meta.excerpt };
+}
+
+export default async function PostPage({ params }: { params: Promise<{ category: string; slug: string }> }) {
   const { category, slug } = await params;
   const post = await getPost(category, slug);
 
   if (!post) {
-    return (
-      <Box sx={{ textAlign: "center", py: 10 }}>
-        <Typography variant="h5" color="text.secondary">
-          Post not found.
-        </Typography>
-        <Link href="/" style={{ textDecoration: "none" }}>
-          <Typography
-            variant="body2"
-            sx={{ color: "primary.main", mt: 2, display: "block" }}
-          >
-            ← Back home
-          </Typography>
-        </Link>
-      </Box>
-    );
+    return <div className="shell not-found"><h1>That note could not be found.</h1><Link href="/">Return home</Link></div>;
   }
 
+  const posts = getPostsByCategory(category);
+  const index = posts.findIndex(item => item.slug === slug);
+  const previous = posts[index + 1];
+  const next = posts[index - 1];
+  const categoryInfo = getCategoryMeta(category);
+
   return (
-    <Box sx={{ maxWidth: 760, mx: "auto" }}>
-      {/* Breadcrumb */}
-      <FlipReveal delay={0} origin="left">
-        <Box
-          sx={{ display: "flex", alignItems: "center", gap: 1, mb: 5 }}
-        >
-          <Link href="/" style={{ textDecoration: "none" }}>
-            <Typography
-              variant="body2"
-              sx={{
-                color: "text.secondary",
-                "&:hover": { color: "primary.light" },
-                transition: "color 0.2s",
-              }}
-            >
-              Home
-            </Typography>
-          </Link>
-          <Typography variant="body2" color="text.secondary">
-            /
-          </Typography>
-          <Link href={`/${category}`} style={{ textDecoration: "none" }}>
-            <Typography
-              variant="body2"
-              sx={{
-                color: "text.secondary",
-                "&:hover": { color: "primary.light" },
-                transition: "color 0.2s",
-              }}
-            >
-              {category}
-            </Typography>
-          </Link>
-          <Typography variant="body2" color="text.secondary">
-            /
-          </Typography>
-          <Typography
-            variant="body2"
-            sx={{ color: "primary.light", fontWeight: 500 }}
-            noWrap
-          >
-            {post.meta.title}
-          </Typography>
-        </Box>
-      </FlipReveal>
+    <article className="article-page">
+      <div className="shell">
+        <nav className="breadcrumbs" aria-label="Breadcrumb">
+          <Link href="/">Home</Link><span>/</span>
+          <Link href={`/${category}`}>{categoryInfo.label}</Link><span>/</span>
+          <span>Article</span>
+        </nav>
 
-      {/* Title block */}
-      <FlipReveal delay={0.1} origin="bottom">
-        <Box sx={{ mb: 4 }}>
-          <Typography
-            variant="h3"
-            sx={{ fontWeight: 800, mb: 1.5, lineHeight: 1.2 }}
-          >
-            {post.meta.title}
-          </Typography>
+        <header className="article-header">
+          <span className="article-label">{categoryInfo.label}</span>
+          <h1>{post.meta.title}</h1>
+          <p>{post.meta.excerpt}</p>
+          <div className="article-byline">
+            <span className="author-mark">AT</span>
+            <span><strong>Akash Tharindu</strong><small>{post.meta.date ? `Published ${post.meta.date}` : "Field note"}</small></span>
+            <span className="reading-time"><Clock3 size={14} /> {post.meta.readingTime} min read</span>
+          </div>
+        </header>
 
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              flexWrap: "wrap",
-              gap: 2,
-            }}
-          >
-            {post.meta.date && (
-              <Typography variant="caption" color="text.secondary">
-                Updated {post.meta.date}
-              </Typography>
+        <div className="article-layout">
+          <aside className="article-aside">
+            <span>On this page</span>
+            <nav>
+              {post.headings.slice(0, 8).map(heading => (
+                <a href={`#${heading.id}`} className={heading.level === 3 ? "subheading" : ""} key={heading.id}>{heading.text}</a>
+              ))}
+            </nav>
+          </aside>
+          <div className="prose-content" dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
+        </div>
+
+        <footer className="article-footer">
+          <div className="tag-list">
+            {post.meta.tags?.map(tag => <span key={tag}>{tag}</span>)}
+          </div>
+          <div className="article-nav">
+            {previous ? (
+              <Link href={`/${category}/${previous.slug}`}>
+                <span><ArrowLeft size={14} /> Previous</span><strong>{previous.title}</strong>
+              </Link>
+            ) : <span />}
+            {next && (
+              <Link href={`/${category}/${next.slug}`} className="next">
+                <span>Next <ArrowRight size={14} /></span><strong>{next.title}</strong>
+              </Link>
             )}
-
-            {(post.meta.tags ?? []).length > 0 && (
-              <Stack direction="row" spacing={0.75} flexWrap="wrap">
-                {(post.meta.tags ?? []).map((t) => (
-                  <Chip key={t} label={t} size="small" />
-                ))}
-              </Stack>
-            )}
-          </Box>
-        </Box>
-      </FlipReveal>
-
-      <Divider sx={{ mb: 5 }} />
-
-      {/* Markdown content */}
-      <FlipReveal delay={0.2} origin="bottom">
-        <Box
-          className="prose-content"
-          dangerouslySetInnerHTML={{ __html: post.contentHtml }}
-        />
-      </FlipReveal>
-
-      <Divider sx={{ mt: 8, mb: 4 }} />
-
-      {/* Back link */}
-      <FlipReveal delay={0.3} origin="left">
-        <Link href={`/${category}`} style={{ textDecoration: "none" }}>
-          <Typography
-            variant="body2"
-            sx={{
-              color: "text.secondary",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 0.5,
-              "&:hover": { color: "primary.light" },
-              transition: "color 0.2s",
-              fontWeight: 500,
-            }}
-          >
-            ← Back to {category}
-          </Typography>
-        </Link>
-      </FlipReveal>
-    </Box>
+          </div>
+          <Link href={`/${category}`} className="back-link"><ArrowLeft size={15} /> Back to {categoryInfo.label}</Link>
+        </footer>
+      </div>
+    </article>
   );
 }
