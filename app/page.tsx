@@ -1,228 +1,145 @@
 import Link from "next/link";
-import { getCategories } from "@/lib/content";
-import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Box from "@mui/material/Box";
-import { Terminal, Code, Box as BoxIcon, FileCode, Beaker, Zap, GitBranch } from "lucide-react";
-import { FlipReveal, FlipCardHover } from "./components/AnimatedComponents";
+import { ArrowDownRight, ArrowRight, ArrowUpRight, MapPin } from "lucide-react";
+import { getAllPosts, getCategories } from "@/lib/content";
+import { articleHref, getCategoryMeta } from "@/lib/site";
+import { Reveal } from "./components/AnimatedComponents";
 
-const CATEGORY_META: Record<
-  string,
-  { icon: React.ReactNode; color: string; description: string }
-> = {
-  "About-me": {
-    icon: <Zap size={20} />,
-    color: "#6366f1",
-    description: "Personal profile & background",
-  },
-  linux: {
-    icon: <Terminal size={20} />,
-    color: "#10b981",
-    description: "Linux, shell & DevOps commands",
-  },
-  "Next.js": {
-    icon: <Code size={20} />,
-    color: "#06b6d4",
-    description: "Next.js & React development",
-  },
-  python: {
-    icon: <FileCode size={20} />,
-    color: "#f59e0b",
-    description: "Python scripts & libraries",
-  },
-  test: {
-    icon: <Beaker size={20} />,
-    color: "#ec4899",
-    description: "Testing strategies & examples",
-  },
-  git: {
-    icon: <GitBranch size={20} />,
-    color: "#f97316",
-    description: "Git workflows, commit conventions & version control",
-  },
-};
-
-const FALLBACK_COLORS = [
-  "#6366f1",
-  "#10b981",
-  "#06b6d4",
-  "#f59e0b",
-  "#ec4899",
-  "#a855f7",
-];
+function formatDate(date?: string) {
+  if (!date) return "Field note";
+  return new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(date));
+}
 
 export default function HomePage() {
   const categories = getCategories();
+  const articleCategories = categories.filter(category => category !== "About-me");
+  const posts = getAllPosts().filter(post => post.category !== "About-me");
+  const featured = posts[0];
 
   return (
-    <Box>
-      {/* ── Hero ── */}
-      <FlipReveal delay={0.1} origin="bottom">
-        <Box
-          sx={{
-            textAlign: "center",
-            py: { xs: 7, md: 12 },
-            mb: { xs: 4, md: 8 },
-            position: "relative",
-          }}
-        >
-          {/* Subtle radial glow behind hero */}
-          <Box
-            sx={{
-              position: "absolute",
-              inset: 0,
-              background:
-                "radial-gradient(ellipse 70% 60% at 50% 40%, rgba(99,102,241,0.08) 0%, transparent 70%)",
-              pointerEvents: "none",
-            }}
-          />
+    <>
+      <section className="hero shell">
+        <Reveal>
+          <div className="eyebrow"><span /> Software engineer · Toronto, Canada</div>
+          <h1>I build systems that stay <em>useful.</em></h1>
+          <div className="hero-bottom">
+            <p>
+              I&apos;m Akash, a software engineer working across product engineering,
+              cloud infrastructure, DevOps, and AI systems. This is where I document
+              the details worth remembering.
+            </p>
+            <div className="hero-actions">
+              <a href="#writing" className="button button-primary">Read the field notes <ArrowDownRight size={17} /></a>
+              <Link href="/about" className="text-link">More about me <ArrowRight size={16} /></Link>
+            </div>
+          </div>
+        </Reveal>
+        <div className="hero-index">01 / FIELD NOTES</div>
+      </section>
 
-          <Typography
-            variant="overline"
-            sx={{
-              color: "primary.main",
-              letterSpacing: "0.25em",
-              fontWeight: 700,
-              display: "block",
-              mb: 2,
-              fontSize: "0.7rem",
-            }}
-          >
-            Full-Stack Engineering
-          </Typography>
+      <section className="marquee-band" aria-label="Areas of expertise">
+        <div className="shell expertise-list">
+          <span>Product Engineering</span><i />
+          <span>Cloud &amp; DevOps</span><i />
+          <span>Distributed Systems</span><i />
+          <span>AI Applications</span>
+        </div>
+      </section>
 
-          <Typography
-            component="h1"
-            className="gradient-text"
-            sx={{
-              fontWeight: 800,
-              fontSize: { xs: "2.8rem", sm: "3.8rem", md: "5rem" },
-              lineHeight: 1.1,
-              mb: 3,
-              fontFamily: '"Inter", sans-serif',
-              letterSpacing: "-0.03em",
-            }}
-          >
-            Akash Tharindu
-          </Typography>
+      <section className="section shell" id="writing">
+        <div className="section-heading">
+          <div>
+            <span className="section-number">01</span>
+            <p className="kicker">Latest writing</p>
+            <h2>Notes from the workbench.</h2>
+          </div>
+          <p>Practical explanations, architecture notes, and lessons earned while building real systems.</p>
+        </div>
 
-          <Typography
-            variant="h6"
-            sx={{
-              color: "text.secondary",
-              mb: 3,
-              fontWeight: 400,
-              fontSize: { xs: "0.95rem", md: "1.1rem" },
-            }}
-          >
-            Software Engineer&nbsp;·&nbsp;Cloud &amp; DevOps&nbsp;·&nbsp;AI Systems
-          </Typography>
+        {featured && (
+          <Link href={articleHref(featured.category, featured.slug)} className="featured-article">
+            <div className="feature-visual">
+              <span className="feature-category">{getCategoryMeta(featured.category).label}</span>
+              <div className="diagram-orbit orbit-one" />
+              <div className="diagram-orbit orbit-two" />
+              <div className="diagram-core">{getCategoryMeta(featured.category).label.slice(0, 2).toUpperCase()}</div>
+            </div>
+            <div className="feature-copy">
+              <span className="article-meta">{formatDate(featured.date)} · {featured.readingTime} min read</span>
+              <h3>{featured.title}</h3>
+              <p>{featured.excerpt}</p>
+              <span className="read-link">Read article <ArrowUpRight size={17} /></span>
+            </div>
+          </Link>
+        )}
 
-          <Typography
-            variant="body1"
-            sx={{
-              color: "text.secondary",
-              maxWidth: 520,
-              mx: "auto",
-              lineHeight: 1.85,
-              fontSize: "0.95rem",
-            }}
-          >
-            A curated knowledge base covering full-stack engineering, Linux &amp;
-            DevOps, cloud infrastructure, and AI-powered systems.
-          </Typography>
+        <div className="article-list">
+          {posts.slice(1, 5).map((post, index) => (
+            <Link
+              href={`/${encodeURIComponent(post.category)}/${encodeURIComponent(post.slug)}`}
+              className="article-row"
+              key={index}
+            >
+              <span className="row-index">{String(index + 2).padStart(2, "0")}</span>
+              <div>
+                <span className="article-meta">{getCategoryMeta(post.category).label} · {post.readingTime} min read</span>
+                <h3>{post.title}</h3>
+              </div>
+              <span className="row-date">{formatDate(post.date)}</span>
+              <ArrowUpRight className="row-arrow" size={20} />
+            </Link>
+          ))}
+        </div>
+        <div className="section-action">
+          <Link href="/articles" className="button button-primary">Browse all articles <ArrowRight size={16} /></Link>
+        </div>
+      </section>
 
-          <Box className="accent-bar" />
-        </Box>
-      </FlipReveal>
-
-      {/* ── Category grid ── */}
-      <Grid container spacing={3}>
-        {categories.map((cat, idx) => {
-          const meta = CATEGORY_META[cat];
-          const color = meta?.color ?? FALLBACK_COLORS[idx % FALLBACK_COLORS.length];
-          const icon = meta?.icon ?? <BoxIcon size={20} />;
-          const description = meta?.description ?? `Articles in ${cat}`;
-          const delay = 0.2 + idx * 0.1;
-
-          return (
-            <Grid key={`${cat}-${idx}`} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
-              <FlipReveal delay={delay} origin="top">
+      <section className="section topics-section">
+        <div className="shell">
+          <div className="section-heading compact">
+            <div>
+              <span className="section-number">02</span>
+              <p className="kicker">Browse the library</p>
+              <h2>Explore by discipline.</h2>
+            </div>
+          </div>
+          <div className="topic-grid">
+            {articleCategories.map((category, index) => {
+              const meta = getCategoryMeta(category);
+              const count = posts.filter((post) => post.category === category).length;
+              return (
                 <Link
-                  href={`/${cat}`}
-                  style={{ textDecoration: "none", display: "block", height: "100%" }}
+                  href={`/${encodeURIComponent(category)}`}
+                  className="topic-card"
+                  key={index}
+                  style={{ "--topic-accent": meta.accent } as React.CSSProperties}
                 >
-                  <FlipCardHover>
-                    <Card
-                      variant="outlined"
-                      sx={{ height: "100%", position: "relative", overflow: "hidden" }}
-                    >
-                      {/* Top accent bar */}
-                      <Box
-                        sx={{
-                          height: "3px",
-                          background: `linear-gradient(90deg, ${color}, ${color}55)`,
-                        }}
-                      />
-
-                      <CardContent sx={{ p: 3 }}>
-                        {/* Icon */}
-                        <Box
-                          sx={{
-                            width: 44,
-                            height: 44,
-                            borderRadius: "12px",
-                            background: `${color}18`,
-                            border: `1px solid ${color}35`,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: "1.3rem",
-                            mb: 2,
-                            color: color,
-                          }}
-                        >
-                          {icon}
-                        </Box>
-
-                        <Typography
-                          variant="h6"
-                          sx={{ fontWeight: 700, mb: 0.75, color: "text.primary" }}
-                        >
-                          {cat}
-                        </Typography>
-
-                        <Typography variant="body2" color="text.secondary">
-                          {description}
-                        </Typography>
-
-                        {/* Arrow hint */}
-                        <Box
-                          sx={{
-                            mt: 2.5,
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 0.5,
-                            color: color,
-                            fontSize: "0.78rem",
-                            fontWeight: 600,
-                            opacity: 0.8,
-                          }}
-                        >
-                          Browse notes
-                          <span style={{ fontSize: "0.9rem" }}>→</span>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </FlipCardHover>
+                  <span className="topic-number">{String(index + 1).padStart(2, "0")}</span>
+                  <meta.icon size={25} strokeWidth={1.5} />
+                  <h3>{meta.label}</h3>
+                  <p>{meta.description}</p>
+                  <span className="topic-count">{count} {count === 1 ? "article" : "articles"} <ArrowRight size={15} /></span>
                 </Link>
-              </FlipReveal>
-            </Grid>
-          );
-        })}
-      </Grid>
-    </Box>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="about-strip shell">
+        <div className="portrait-monogram">AT</div>
+        <div className="about-copy">
+          <span className="section-number">03</span>
+          <p className="kicker">Behind the notes</p>
+          <h2>Engineering with curiosity<br />and a bias for clarity.</h2>
+          <p>I care about the seam between software design and operations—the place where good ideas have to survive contact with production.</p>
+          <Link href="/about" className="text-link">My background and work <ArrowRight size={16} /></Link>
+        </div>
+        <div className="availability">
+          <span><i /> Open to thoughtful conversations</span>
+          <p><MapPin size={14} /> Toronto, Ontario</p>
+        </div>
+      </section>
+    </>
   );
 }
